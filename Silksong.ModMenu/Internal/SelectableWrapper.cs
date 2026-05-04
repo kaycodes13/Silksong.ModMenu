@@ -1,5 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Silksong.ModMenu.Elements;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Silksong.ModMenu.Internal;
@@ -31,22 +35,60 @@ internal class SelectableWrapper(Selectable selectable) : INavigable
 
     public void ClearNeighbors() => Nav = new();
 
-    public bool GetSelectable(
+    public bool GetSelectables(
         NavigationDirection direction,
-        [MaybeNullWhen(false)] out Selectable selectable
+        [MaybeNullWhen(false)] out IEnumerable<Selectable> selectables
     )
     {
-        selectable = this.selectable;
+        selectables = [selectable];
         return true;
     }
 
-    public void SetNeighbor(NavigationDirection direction, Selectable selectable) =>
-        Nav = direction switch
+    public void SetNeighbor(NavigationDirection direction, IEnumerable<Selectable> selectables)
+    {
+        if (!selectables.Any())
+            throw new ArgumentException(
+                "At least one selectable is required.",
+                nameof(selectables)
+            );
+
+        Vector2 position = selectable.transform.position;
+        Vector2 directionVector = direction switch
         {
-            NavigationDirection.Up => Nav with { selectOnUp = selectable },
-            NavigationDirection.Left => Nav with { selectOnLeft = selectable },
-            NavigationDirection.Right => Nav with { selectOnRight = selectable },
-            NavigationDirection.Down => Nav with { selectOnDown = selectable },
+            NavigationDirection.Up => Vector2.up,
+            NavigationDirection.Left => Vector2.left,
+            NavigationDirection.Right => Vector2.right,
+            NavigationDirection.Down => Vector2.down,
             _ => throw direction.UnsupportedEnum(),
         };
+
+        Selectable bestOption = selectables
+            .Select(selectable =>
+            {
+                Vector2 otherPos = selectable.transform.position,
+                    interAngle = otherPos - position;
+                float directionalAngle = Vector2.Angle(directionVector, interAngle);
+                return (
+                    selectable,
+                    directionalAngle,
+                    angle: Mathf.Min(directionalAngle, Vector2.Angle(-directionVector, interAngle)),
+                    position: otherPos
+                );
+            })
+            // Rough shallowness of the angle between selectables, then favour selectables on the correct side of this one
+            .OrderBy(x => (int)Mathf.RoundToMultipleOf(x.angle, 20))
+            .ThenBy(x => (int)Mathf.RoundToMultipleOf(x.directionalAngle, 90))
+            .ThenBy(x => Vector2.Distance(position, x.position))
+            .First()
+            .selectable;
+
+        Nav = direction switch
+        {
+            NavigationDirection.Up => Nav with { selectOnUp = bestOption },
+            NavigationDirection.Left => Nav with { selectOnLeft = bestOption },
+            NavigationDirection.Right => Nav with { selectOnRight = bestOption },
+            NavigationDirection.Down => Nav with { selectOnDown = bestOption },
+            _ => throw direction.UnsupportedEnum(),
+        };
+    }
 }

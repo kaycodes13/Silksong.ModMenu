@@ -85,9 +85,9 @@ public abstract class AbstractGroup : MenuDisposable, INavigableMenuEntity
             .FirstOrDefault();
 
     /// <inheritdoc/>
-    public abstract bool GetSelectable(
+    public abstract bool GetSelectables(
         NavigationDirection direction,
-        [MaybeNullWhen(false)] out Selectable selectable
+        [MaybeNullWhen(false)] out IEnumerable<Selectable> selectable
     );
 
     private GameObject? gameObjectParent;
@@ -113,7 +113,10 @@ public abstract class AbstractGroup : MenuDisposable, INavigableMenuEntity
     }
 
     /// <inheritdoc/>
-    public virtual void SetNeighbor(NavigationDirection direction, Selectable selectable)
+    public virtual void SetNeighbor(
+        NavigationDirection direction,
+        IEnumerable<Selectable> selectable
+    )
     {
         foreach (var navigable in GetNavigables(direction))
             navigable.SetNeighbor(direction, selectable);
