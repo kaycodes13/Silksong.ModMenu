@@ -157,14 +157,18 @@ public class GridGroup(int columns) : AbstractGroup
     {
         var navigables = direction switch
         {
-            // Bottom row.
-            NavigationDirection.Up => GetNavigables(NavigationDirection.Down),
+            // Bottommost element of every column.
+            NavigationDirection.Up => GetColumns()
+                .Select(x => (INavigable?)x.LastOrDefault(e => e is INavigable && e.VisibleSelf))
+                .WhereNonNull(),
             // Rightmost element of every row.
             NavigationDirection.Left => GetNavigables(NavigationDirection.Right),
             // Leftmost element of every row.
             NavigationDirection.Right => GetNavigables(NavigationDirection.Left),
-            // Top row.
-            NavigationDirection.Down => GetNavigables(NavigationDirection.Up),
+            // Topmost element of every column.
+            NavigationDirection.Down => GetColumns()
+                .Select(x => (INavigable?)x.FirstOrDefault(e => e is INavigable && e.VisibleSelf))
+                .WhereNonNull(),
             _ => throw new ArgumentException($"{direction}"),
         };
 
