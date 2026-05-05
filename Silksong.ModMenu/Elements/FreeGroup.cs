@@ -93,7 +93,7 @@ public class FreeGroup : AbstractGroup
         [MaybeNullWhen(false)] out IEnumerable<Selectable> selectables
     )
     {
-        selectables = GetNavigables(direction)
+        selectables = GetNavigables(direction.Opposite())
             .SelectMany(n => n.GetSelectables(direction, out var s) ? s : null);
         return selectables != null;
     }
