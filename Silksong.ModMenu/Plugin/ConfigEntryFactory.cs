@@ -45,6 +45,10 @@ public class ConfigEntryFactory
         GenerateDoubleElement,
         GenerateStringElement,
         GenerateColorElement,
+        GenerateVector2Element,
+        GenerateVector3Element,
+        GenerateVector4Element,
+        GenerateQuaternionElement,
     ];
 
     /// <summary>
@@ -701,6 +705,106 @@ public class ConfigEntryFactory
         color.SynchronizeWith(colorEntry);
 
         menuElement = color;
+        return true;
+    }
+
+    /// <summary>
+    /// Generate a text element for a Vector2.
+    /// </summary>
+    public static bool GenerateVector2Element(
+        ConfigEntryBase entry,
+        [MaybeNullWhen(false)] out MenuElement menuElement
+    )
+    {
+        if (entry is not ConfigEntry<Vector2> vectorEntry)
+        {
+            menuElement = default;
+            return false;
+        }
+
+        TextInput<Vector2> vector = new(
+            entry.LabelName(),
+            TextModels.ForVector2(),
+            entry.DescriptionLine()
+        );
+        vector.SynchronizeWith(vectorEntry);
+
+        menuElement = vector;
+        return true;
+    }
+
+    /// <summary>
+    /// Generate a text element for a Vector3.
+    /// </summary>
+    public static bool GenerateVector3Element(
+        ConfigEntryBase entry,
+        [MaybeNullWhen(false)] out MenuElement menuElement
+    )
+    {
+        if (entry is not ConfigEntry<Vector3> vectorEntry)
+        {
+            menuElement = default;
+            return false;
+        }
+
+        TextInput<Vector3> vector = new(
+            entry.LabelName(),
+            TextModels.ForVector3(),
+            entry.DescriptionLine()
+        );
+        vector.SynchronizeWith(vectorEntry);
+
+        menuElement = vector;
+        return true;
+    }
+
+    /// <summary>
+    /// Generate a text element for a Vector4.
+    /// </summary>
+    public static bool GenerateVector4Element(
+        ConfigEntryBase entry,
+        [MaybeNullWhen(false)] out MenuElement menuElement
+    )
+    {
+        if (entry is not ConfigEntry<Vector4> vectorEntry)
+        {
+            menuElement = default;
+            return false;
+        }
+
+        TextInput<Vector4> vector = new(
+            entry.LabelName(),
+            TextModels.ForVector4(),
+            entry.DescriptionLine()
+        );
+        vector.SynchronizeWith(vectorEntry);
+
+        menuElement = vector;
+        return true;
+    }
+
+    /// <summary>
+    /// Generate a text element for a Quaternion.
+    /// </summary>
+    public static bool GenerateQuaternionElement(
+        ConfigEntryBase entry,
+        [MaybeNullWhen(false)] out MenuElement menuElement
+    )
+    {
+        if (entry is not ConfigEntry<Quaternion> quaternionEntry)
+        {
+            menuElement = default;
+            return false;
+        }
+
+        TextInput<Quaternion> quaternion = new(
+            entry.LabelName(),
+            TextModels.ForQuaternion(),
+            entry.DescriptionLine()
+        );
+        quaternion.SynchronizeWith(quaternionEntry);
+
+        menuElement = quaternion;
         return true;
     }
 
