@@ -20,7 +20,6 @@ public class TextButton : SelectableElement
         : base(MenuPrefabs.Get().NewTextButtonContainer(out var menuButton), menuButton)
     {
         Container.name = text.Text;
-        SelectableComponent.name = text.Canonical;
 
         MenuButton = menuButton;
         MenuButton
