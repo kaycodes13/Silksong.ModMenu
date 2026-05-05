@@ -141,9 +141,9 @@ public class PaginatedMenuScreen : AbstractMenuScreen
         foreach (var (top, bot) in column.CircularPairs())
         {
             if (top.GetNeighborsUp(out var s))
-                bot.SetNeighborUp(s);
+                bot.SetNeighborsUp(s);
             if (bot.GetNeighborsDown(out s))
-                top.SetNeighborDown(s);
+                top.SetNeighborsDown(s);
         }
     }
 }

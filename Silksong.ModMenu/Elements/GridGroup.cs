@@ -172,9 +172,8 @@ public class GridGroup(int columns) : AbstractGroup
             _ => throw new ArgumentException($"{direction}"),
         };
 
-        selectables =
-            navigables?.SelectMany(x => x.GetSelectables(direction, out var s) ? s : []) ?? [];
-        return navigables != null && selectables.Any();
+        selectables = navigables.SelectMany(x => x.GetSelectables(direction, out var s) ? s : []);
+        return selectables.Any();
     }
 
     /// <inheritdoc/>
@@ -245,12 +244,12 @@ public class GridGroup(int columns) : AbstractGroup
                         prevRow[i] != null
                         && ClosestColumn(nextRow, NavigationDirection.Down, i, out var s)
                     )
-                        prevRow[i]!.SetNeighborDown(s);
+                        prevRow[i]!.SetNeighborsDown(s);
                     if (
                         nextRow[i] != null
                         && ClosestColumn(prevRow, NavigationDirection.Up, i, out s)
                     )
-                        nextRow[i]!.SetNeighborUp(s);
+                        nextRow[i]!.SetNeighborsUp(s);
                 }
             }
             prevRow = nextRow;

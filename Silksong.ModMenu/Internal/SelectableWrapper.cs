@@ -23,7 +23,7 @@ internal class SelectableWrapper(Selectable selectable) : INavigable
             };
     }
 
-    public void ClearNeighbor(NavigationDirection direction) =>
+    public void ClearNeighbors(NavigationDirection direction) =>
         Nav = direction switch
         {
             NavigationDirection.Up => Nav with { selectOnUp = null },
@@ -44,7 +44,7 @@ internal class SelectableWrapper(Selectable selectable) : INavigable
         return true;
     }
 
-    public void SetNeighbor(NavigationDirection direction, IEnumerable<Selectable> selectables)
+    public void SetNeighbors(NavigationDirection direction, IEnumerable<Selectable> selectables)
     {
         if (!selectables.Any())
             throw new ArgumentException(
@@ -52,7 +52,7 @@ internal class SelectableWrapper(Selectable selectable) : INavigable
                 nameof(selectables)
             );
 
-        Vector2 position = selectable.transform.position;
+        Vector2 thisPosition = selectable.transform.position;
         Vector2 directionVector = direction switch
         {
             NavigationDirection.Up => Vector2.up,
@@ -65,20 +65,32 @@ internal class SelectableWrapper(Selectable selectable) : INavigable
         Selectable bestOption = selectables
             .Select(selectable =>
             {
-                Vector2 otherPos = selectable.transform.position,
-                    interAngle = otherPos - position;
-                float directionalAngle = Vector2.Angle(directionVector, interAngle);
+                Vector2 otherPosition = selectable.transform.position,
+                    angleBetweenSelectables = otherPosition - thisPosition;
+
+                float angleRelativeToDirection = Vector2.Angle(
+                        directionVector,
+                        angleBetweenSelectables
+                    ),
+                    angleRelativeToOpposite = Vector2.Angle(
+                        -directionVector,
+                        angleBetweenSelectables
+                    );
+
                 return (
                     selectable,
-                    directionalAngle,
-                    angle: Mathf.Min(directionalAngle, Vector2.Angle(-directionVector, interAngle)),
-                    position: otherPos
+                    angleRelativeToDirection,
+                    angleRelativeToAxis: Mathf.Min(
+                        angleRelativeToDirection,
+                        angleRelativeToOpposite
+                    ),
+                    position: otherPosition
                 );
             })
-            // Rough shallowness of the angle between selectables, then favour selectables on the correct side of this one
-            .OrderBy(x => (int)Mathf.RoundToMultipleOf(x.angle, 20))
-            .ThenBy(x => (int)Mathf.RoundToMultipleOf(x.directionalAngle, 90))
-            .ThenBy(x => Vector2.Distance(position, x.position))
+            // Favour selectables on the correct side of this one, narrow down by how well aligned they are with the current selectable
+            .OrderBy(other => (int)Mathf.RoundToMultipleOf(other.angleRelativeToDirection, 180))
+            .ThenBy(other => (int)Mathf.RoundToMultipleOf(other.angleRelativeToAxis, 20))
+            .ThenBy(other => Vector2.Distance(thisPosition, other.position))
             .First()
             .selectable;
 

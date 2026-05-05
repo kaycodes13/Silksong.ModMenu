@@ -72,12 +72,12 @@ public abstract class SelectableElement : MenuElement, INavigableMenuEntity
     public void ClearNeighbors() => new SelectableWrapper(SelectableComponent).ClearNeighbors();
 
     /// <inheritdoc/>
-    public void ClearNeighbor(NavigationDirection direction) =>
-        new SelectableWrapper(SelectableComponent).ClearNeighbor(direction);
+    public void ClearNeighbors(NavigationDirection direction) =>
+        new SelectableWrapper(SelectableComponent).ClearNeighbors(direction);
 
     /// <inheritdoc/>
-    public void SetNeighbor(NavigationDirection direction, IEnumerable<Selectable> selectables) =>
-        new SelectableWrapper(SelectableComponent).SetNeighbor(direction, selectables);
+    public void SetNeighbors(NavigationDirection direction, IEnumerable<Selectable> selectables) =>
+        new SelectableWrapper(SelectableComponent).SetNeighbors(direction, selectables);
 
     /// <inheritdoc/>
     public bool GetSelectables(

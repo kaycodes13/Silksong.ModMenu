@@ -288,11 +288,11 @@ public class ScrollingPane : MenuDisposable, INavigableMenuEntity
     public void ClearNeighbors() => Content?.ClearNeighbors();
 
     /// <inheritdoc/>
-    public void SetNeighbor(NavigationDirection direction, IEnumerable<Selectable> selectables) =>
-        Content?.SetNeighbor(direction, selectables);
+    public void SetNeighbors(NavigationDirection direction, IEnumerable<Selectable> selectables) =>
+        Content?.SetNeighbors(direction, selectables);
 
     /// <inheritdoc/>
-    public void ClearNeighbor(NavigationDirection direction) => Content?.ClearNeighbor(direction);
+    public void ClearNeighbors(NavigationDirection direction) => Content?.ClearNeighbors(direction);
 
     /// <inheritdoc/>
     public bool GetSelectables(
